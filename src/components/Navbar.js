@@ -4,9 +4,11 @@ import Link from "next/link";
 
 const Navbar = () => {
   return (
-    <nav className="border-b-[1.5px] h-[4rem] flex justify-between bg-white shadow-sm">
+    <nav className="border-b-[1.5px] h-[4rem] w-full flex justify-between bg-white shadow-sm fixed top-0 z-50">
       <div className="flex h-full items-center gap-6 ml-6">
-        <Image src={SpeedyBrand} className="cursor-pointer" alt="logo" />
+        <Link href="/">
+          <Image src={SpeedyBrand} className="cursor-pointer" alt="logo" />
+        </Link>
         <div className="font-medium cursor-pointer">Image Editor</div>
       </div>
       <div className="flex items-center justify-center mr-5 gap-4">
