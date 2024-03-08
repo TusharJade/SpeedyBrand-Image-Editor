@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Navbar = () => {
   return (
-    <nav className="border-b-[1.5px] h-[4rem] flex justify-between bg-white">
+    <nav className="border-b-[1.5px] h-[4rem] flex justify-between bg-white shadow-sm">
       <div className="flex h-full items-center gap-6 ml-6">
         <Image src={SpeedyBrand} className="cursor-pointer" alt="logo" />
         <div className="font-medium cursor-pointer">Image Editor</div>
