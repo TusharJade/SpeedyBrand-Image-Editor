@@ -1,5 +1,5 @@
 import Image from "next/image";
-import SpeedyBrand from "../../public/assets/SpeedyBrand.svg";
+import SpeedyBrand from "../../public/assets/speedybrand.svg";
 import Link from "next/link";
 import { useAuthContext } from "@/store/AuthContext";
 import { toast } from "react-toastify";
