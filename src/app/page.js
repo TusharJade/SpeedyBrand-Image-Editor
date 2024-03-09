@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from "react";
 import { MdDownload } from "react-icons/md";
 import LandingPage from "@/components/LandingPage";
 import { effects } from "@/lib/utils";
+import { IoMdArrowDropdown } from "react-icons/io";
+import { MdDelete } from "react-icons/md";
 
 export default function Home() {
   const [image, setImage] = useState(null);
@@ -15,6 +17,7 @@ export default function Home() {
   const [text, setText] = useState([]); // State for text input
   const [draggingIndex, setDraggingIndex] = useState(null); // Define draggingIndex state variable
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // State to track offset during dragging
+  const [dropDown, setDropDown] = useState({ effects: false, text: false });
   const canvasRef = useRef(null);
 
   // when image or text is added
@@ -170,6 +173,7 @@ export default function Home() {
 
       {image && (
         <div className="w-full flex h-screen bg-[#f9f9f9]">
+          {/* // image section */}
           <section className="flex justify-center items-center w-[72%] mt-[4rem] relative">
             <canvas
               id="canvas"
@@ -179,127 +183,174 @@ export default function Home() {
             ></canvas>
           </section>
 
-          <section className="w-[28%] mt-[4rem] bg-white shadow-md">
+          {/* effects and text section */}
+          <section className="w-[28%] mt-[4rem] bg-white shadow-md overflow-auto flex justify-between flex-col">
             <div>
-              <div>
-                <label className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    value="grayscale"
-                    checked={appliedEffects.includes("grayscale")}
-                    onChange={handleCheckboxChange}
-                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                  />
-                  <span className="text-gray-800 mt-[2.5px]">Grayscale</span>
-                </label>
-                <label className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    value="invert"
-                    checked={appliedEffects.includes("invert") ? true : false}
-                    onChange={handleCheckboxChange}
-                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                  />
-                  <span className="text-gray-800 mt-[2.5px]">Invert</span>
-                  Colors
-                </label>
-                <label className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    value="sepia"
-                    checked={appliedEffects.includes("sepia") ? true : false}
-                    onChange={handleCheckboxChange}
-                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                  />
-                  <span className="text-gray-800 mt-[2.5px]"> Sepia</span>
-                </label>
-                <label className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    value="brightness"
-                    checked={
-                      appliedEffects.includes("brightness") ? true : false
-                    }
-                    onChange={handleCheckboxChange}
-                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                  />
-                  <span className="text-gray-800 mt-[2.5px]"> Brightness</span>
-                </label>
-                <label className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    value="contrast"
-                    checked={appliedEffects.includes("contrast") ? true : false}
-                    onChange={handleCheckboxChange}
-                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                  />
-                  <span className="text-gray-800 mt-[2.5px]">Contrast</span>
-                </label>
-                <label className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    value="vintage"
-                    checked={appliedEffects.includes("vintage") ? true : false}
-                    onChange={handleCheckboxChange}
-                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                  />
-                  <span className="text-gray-800 mt-[2.5px]">Vintage</span>
-                </label>
-                <div className="mx-4 flex justify-between mb-4">
-                  <button
-                    onClick={resetEffects}
-                    className="text-[#fe5829] border-[1px] border-[#fe5829] px-3 py-1 rounded-md"
-                  >
-                    Reset
-                  </button>
-                </div>
+              <div
+                className="w-full flex items-center justify-center font-sans font-medium cursor-pointer text-[1.1rem] bg-white text-[#454545] py-5"
+                onClick={() =>
+                  setDropDown((prev) => ({ ...prev, effects: !prev.effects }))
+                }
+              >
+                <span className="mr-2 text-[1.25rem] mt-[1px]">
+                  <IoMdArrowDropdown />
+                </span>
+                Effets for Image
               </div>
-            </div>
 
-            <div>
-              <button onClick={addText}>Add Text</button>
-              {text.length > 0 &&
-                text.map((textItem, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      value={textItem.text}
-                      onChange={(e) =>
-                        updateText(index, "text", e.target.value)
-                      }
-                      placeholder="Enter text"
-                    />
-                    <input
-                      type="number"
-                      value={textItem.fontSize}
-                      onChange={(e) =>
-                        updateText(index, "fontSize", parseInt(e.target.value))
-                      }
-                      placeholder="Font size"
-                    />
-                    <input
-                      type="color"
-                      value={textItem.color}
-                      onChange={(e) =>
-                        updateText(index, "color", e.target.value)
-                      }
-                      placeholder="Text color"
-                    />
-                    <button onClick={() => removeText(index)}>Remove</button>
-                    <div
-                      onMouseDown={(event) => handleMouseDown(event, index)}
-                      style={{ cursor: "move" }}
-                    >
-                      Drag me
+              <div className="bg-slate-300 h-[1px]"></div>
+
+              {dropDown.effects && (
+                <>
+                  <div className="ml-4 mt-3">
+                    {[
+                      "Grayscale",
+                      "Invert",
+                      "Sepia",
+                      "Brightness",
+                      "Contrast",
+                      "Vintage",
+                    ].map((effectName) => {
+                      return (
+                        <label className="flex items-center mb-3">
+                          <input
+                            type="checkbox"
+                            value={effectName.toLowerCase()}
+                            checked={
+                              appliedEffects.includes(effectName.toLowerCase())
+                                ? true
+                                : false
+                            }
+                            onChange={handleCheckboxChange}
+                            className="h-5 w-5 text-blue-600 rounded mr-[5px] cursor-pointer"
+                          />
+                          <span className="text-gray-800 mt-[2.5px] cursor-pointer">
+                            {effectName}
+                          </span>
+                        </label>
+                      );
+                    })}
+                    <div className="flex justify-center mb-4 w-full">
+                      <button
+                        onClick={resetEffects}
+                        className="text-[#fe5829] border-[1px] border-[#fe5829] px-3 py-1 rounded-md"
+                      >
+                        Reset
+                      </button>
                     </div>
                   </div>
-                ))}
+                  <div className="bg-slate-300 h-[1px]"></div>
+                </>
+              )}
+
+              {/* Add text */}
+              <div
+                className="w-full flex items-center justify-center font-sans font-medium text-[1.1rem] bg-white text-[#454545] py-5 cursor-pointer"
+                onClick={() =>
+                  setDropDown((prev) => ({ ...prev, text: !prev.text }))
+                }
+              >
+                <span className="mr-2 text-[1.25rem] mt-[1px]">
+                  <IoMdArrowDropdown />
+                </span>
+                Add Text
+              </div>
+
+              <div className="bg-slate-300 h-[1px]"></div>
+
+              {dropDown.text && (
+                <div>
+                  {text.length > 0 &&
+                    text.map((textItem, index) => (
+                      <div key={index}>
+                        <label
+                          htmlFor="text"
+                          className="flex items-center mx-4 mt-4"
+                        >
+                          <span className="mr-2 text-[#616161]">Text:</span>
+                          <input
+                            type="text"
+                            id="text"
+                            value={textItem.text}
+                            onChange={(e) =>
+                              updateText(index, "text", e.target.value)
+                            }
+                            placeholder="Enter text"
+                            className="px-2 py-2 w-full border outline-none ml-[31px] border-slate-300 rounded-lg placeholder:text-slate-400"
+                          />
+                        </label>
+                        <label
+                          htmlFor="number"
+                          className="flex items-center mx-4 mt-4"
+                        >
+                          <span className="mr-2 text-[#616161]">Fontsize:</span>
+                          <input
+                            type="number"
+                            value={textItem.fontSize}
+                            onChange={(e) =>
+                              updateText(
+                                index,
+                                "fontSize",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="Font size"
+                            className="px-2 py-2 border w-full outline-none border-slate-300 rounded-lg placeholder:text-slate-400"
+                          />
+                        </label>
+                        <label
+                          htmlFor="color"
+                          className="flex items-center mx-4 mt-4"
+                        >
+                          <span className="text-[#616161] mr-8">Color:</span>
+                          <input
+                            type="color"
+                            id="color"
+                            value={textItem.color}
+                            onChange={(e) =>
+                              updateText(index, "color", e.target.value)
+                            }
+                            placeholder="Text color"
+                          />
+                        </label>
+                        <div className="flex items-center justify-around mx-4 mt-4">
+                          <button
+                            onClick={() => removeText(index)}
+                            className="border border-[#fe5829] text-[#fe5829] flex items-center justify-center py-1.5 px-2.5 gap-1 rounded text-[14px] font-sans"
+                          >
+                            <MdDelete className="mb-[1px]" />
+                            <span> Delete</span>
+                          </button>
+                          <div
+                            onMouseDown={(event) =>
+                              handleMouseDown(event, index)
+                            }
+                            style={{ cursor: "move" }}
+                          >
+                            Drag me
+                          </div>
+                        </div>
+                        <div className="bg-slate-300 h-[1px] mx-4 mt-3"></div>
+                      </div>
+                    ))}
+
+                  <div className="flex items-center justify-center">
+                    <button
+                      onClick={addText}
+                      className="border-[1px] py-2 px-4 rounded-md mt-4 text-[#fe5829] border-[#fe5829] font-medium"
+                    >
+                      Click to add new text
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="flex justify-center items-center w-full">
+            {/* Download edited image */}
+            <div className="flex justify-center items-center w-full mb-3 mt-4">
               <Button variant="destructive" size="sm" onClick={downloadImage}>
                 <MdDownload className="mt-[1px] mr-1" />
-                Save
+                Download
               </Button>
             </div>
           </section>
