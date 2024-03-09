@@ -313,7 +313,7 @@ export default function Home() {
                             placeholder="Text color"
                           />
                         </label>
-                        <div className="flex items-center justify-around mx-4 mt-4">
+                        <div className="flex items-center justify-around mx-4">
                           <button
                             onClick={() => removeText(index)}
                             className="border border-[#fe5829] text-[#fe5829] flex items-center justify-center py-1.5 px-2.5 gap-1 rounded text-[14px] font-sans"
@@ -325,9 +325,11 @@ export default function Home() {
                             onMouseDown={(event) =>
                               handleMouseDown(event, index)
                             }
-                            style={{ cursor: "move" }}
+                            className="cursor-move bg-gray-700 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-800 flex items-center justify-center"
+                            style={{ width: "80px", height: "80px" }}
                           >
-                            Drag me
+                            <div className="w-2.5 h-5 bg-white rounded-full mr-2"></div>
+                            <div className="text-sm">Drag me</div>
                           </div>
                         </div>
                         <div className="bg-slate-300 h-[1px] mx-4 mt-3"></div>
