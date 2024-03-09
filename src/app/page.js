@@ -17,7 +17,7 @@ export default function Home() {
   const [image, setImage] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [appliedEffects, setAppliedEffects] = useState([]);
-  const [text, setText] = useState([]); // State for text input
+  const [text, setText] = useState(""); // State for text input
   const [fontSize, setFontSize] = useState(16); // State for font size
   const [textColor, setTextColor] = useState("#000000"); // State for text color
   const [textPosition, setTextPosition] = useState({ x: 50, y: 50 }); // State for text position
@@ -188,13 +188,13 @@ export default function Home() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     // Redraw image
     if (image) {
       const img = new Image();
       img.onload = () => {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         const { naturalWidth, naturalHeight } = img;
         const canvasAspectRatio = canvas.width / canvas.height;
         const imageAspectRatio = naturalWidth / naturalHeight;
