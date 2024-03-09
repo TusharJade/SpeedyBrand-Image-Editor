@@ -1,6 +1,6 @@
 import { MdOutlineMailOutline } from "react-icons/md";
 
-const EmailInput = () => {
+const EmailInput = ({ setUser, user }) => {
   return (
     <label
       htmlFor="email"
@@ -12,7 +12,12 @@ const EmailInput = () => {
         <input
           id="email"
           type="email"
+          value={user.email}
+          onChange={(e) =>
+            setUser((prev) => ({ ...prev, email: e.target.value }))
+          }
           placeholder="Enter your e-mail"
+          required
           className="placeholder:text-gray-400 placeholder:text-[14.5px] text-[14.5px] outline-none"
         />
       </div>

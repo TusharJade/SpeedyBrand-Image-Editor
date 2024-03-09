@@ -1,6 +1,6 @@
 import { FiKey } from "react-icons/fi";
 
-const PasswordInput = () => {
+const PasswordInput = ({ setUser, user }) => {
   return (
     <label
       htmlFor="password"
@@ -12,6 +12,11 @@ const PasswordInput = () => {
         <input
           id="password"
           type="password"
+          value={user.password}
+          onChange={(e) =>
+            setUser((prev) => ({ ...prev, password: e.target.value }))
+          }
+          required
           placeholder="Enter your password"
           className="placeholder:text-gray-400 placeholder:text-[14.5px] text-[14.5px] outline-none"
         />

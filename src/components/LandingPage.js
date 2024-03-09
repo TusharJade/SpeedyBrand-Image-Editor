@@ -1,7 +1,10 @@
 import { useRef } from "react";
 import { Button } from "./ui/button";
+import { useAuthContext } from "@/store/AuthContext";
+import { toast } from "react-toastify";
 
 const LandingPage = ({ setImage }) => {
+  const { auth } = useAuthContext();
   const fileInputRef = useRef(null);
   return (
     <section className="text-center pt-[5.5rem]">
@@ -24,7 +27,15 @@ const LandingPage = ({ setImage }) => {
         className="hidden"
         accept="image/*"
       />
-      <div onClick={() => fileInputRef.current.click()}>
+      <div
+        onClick={() => {
+          if (auth.isLogin) {
+            fileInputRef.current.click();
+          } else {
+            toast.warn("Please login to edit photo");
+          }
+        }}
+      >
         <Button variant="default">Select Image</Button>
       </div>
     </section>

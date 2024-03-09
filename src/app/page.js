@@ -2,16 +2,17 @@
 
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useRef, useState } from "react";
 import { MdDownload } from "react-icons/md";
 import LandingPage from "@/components/LandingPage";
 import { effects } from "@/lib/utils";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
+import { useAuthContext } from "@/store/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Home() {
+  const { auth } = useAuthContext();
   const [image, setImage] = useState(null);
   const [appliedEffects, setAppliedEffects] = useState([]);
   const [text, setText] = useState([]); // State for text input
@@ -167,7 +168,6 @@ export default function Home() {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
-      <ToastContainer />
       <Navbar />
       {!image && <LandingPage setImage={setImage} />}
 

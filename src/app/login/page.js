@@ -1,22 +1,59 @@
+"use client";
+
 import { FaCircleChevronRight } from "react-icons/fa6";
 import Image from "next/image";
 import Link from "next/link";
 import AuthLeftSection from "@/components/AuthLeftSection";
 import PasswordInput from "@/components/PasswordInput";
 import EmailInput from "@/components/EmailInput";
+import { useAuthContext } from "@/store/AuthContext";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { useState } from "react";
 
 const page = () => {
+  const [user, setUser] = useState({ email: "", password: "" });
+  const { signUpData, setAuth } = useAuthContext();
+  const router = useRouter();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (signUpData.find((prevUser) => prevUser.email === user.email)) {
+      if (
+        signUpData.find(
+          (prevUser) =>
+            prevUser.password === user.password && prevUser.email === user.email
+        )
+      ) {
+        router.push("/");
+        toast.success("Login successfully");
+        localStorage.setItem("USER", JSON.stringify(user));
+        setAuth({ isLogin: true });
+      } else {
+        toast.error("Password is wrong");
+      }
+    } else {
+      toast.error("email is not reginster");
+    }
+  };
   return (
     <div className="w-full h-screen flex">
       <AuthLeftSection />
       <section className="w-[50%] h-screen">
-        <form className="flex flex-col items-center justify-center h-full font-sans">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col items-center justify-center h-full font-sans"
+        >
           <div className="font-semibold text-[1.5rem]">Welcome to Speedy</div>
           <div className="text-[#667085] mt-1">
             Log in to create amazing content!
           </div>
 
-          <button class="px-20 py-3 border flex gap-2 border-slate-300 rounded-lg items-center mt-6">
+          <button
+            class="px-20 py-3 border flex gap-2 border-slate-300 rounded-lg items-center mt-6"
+            onClick={() => {
+              setUser({ email: "tushar@gmail.com", password: "234567" });
+            }}
+          >
             <div>
               <Image
                 width={20}
@@ -27,7 +64,7 @@ const page = () => {
               />
             </div>
             <span className="text-gray-700 font-semibold text-[15px]">
-              Continue With Google
+              Continue as guest
             </span>
           </button>
 
@@ -38,9 +75,9 @@ const page = () => {
             </div>
           </div>
 
-          <EmailInput />
+          <EmailInput setUser={setUser} user={user} />
 
-          <PasswordInput />
+          <PasswordInput setUser={setUser} user={user} />
 
           <button
             className="text-white bg-[#fe5829] text-[1.1rem] mt-6 flex items-center justify-center px-[1.625rem] pt-4 pb-[17px] gap-2 rounded-full"

@@ -1,16 +1,39 @@
+"use client";
+
 import { FaCircleChevronRight } from "react-icons/fa6";
 import Image from "next/image";
 import Link from "next/link";
 import AuthLeftSection from "@/components/AuthLeftSection";
 import PasswordInput from "@/components/PasswordInput";
 import EmailInput from "@/components/EmailInput";
+import { useAuthContext } from "@/store/AuthContext";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const page = () => {
+  const [user, setUser] = useState({ email: "", password: "" });
+  const { setSignUpData } = useAuthContext();
+  const router = useRouter();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (user.password.length > 5) {
+      setSignUpData((prevData) => [...prevData, user]);
+      toast.success("Sign up successfully, please login now");
+      router.push("/login");
+    } else {
+      toast.error("Password should be greater than 5 character");
+    }
+  };
   return (
     <div className="w-full h-screen flex">
       <AuthLeftSection />
       <section className="w-[50%] h-screen">
-        <form className="flex flex-col items-center justify-center h-full font-sans">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col items-center justify-center h-full font-sans"
+        >
           <div className="font-semibold text-[1.5rem]">Sign Up</div>
           <div className="text-[#667085] mt-1">To create amazing content!</div>
 
@@ -36,9 +59,9 @@ const page = () => {
             </div>
           </div>
 
-          <EmailInput />
+          <EmailInput setUser={setUser} user={user} />
 
-          <PasswordInput />
+          <PasswordInput setUser={setUser} user={user} />
 
           <button
             className="text-white bg-[#fe5829] text-[1.1rem] mt-6 flex items-center justify-center px-[1.625rem] pt-4 pb-[17px] gap-2 rounded-full"
