@@ -20,10 +20,11 @@ export default function Home() {
   const [text, setText] = useState(""); // State for text input
   const [fontSize, setFontSize] = useState(16); // State for font size
   const [textColor, setTextColor] = useState("#000000"); // State for text color
-  const [textPosition, setTextPosition] = useState({ x: 50, y: 50 }); // State for text position
-  const [isDragging, setIsDragging] = useState(false); // State to track dragging state
+  const [draggingIndex, setDraggingIndex] = useState(null); // Define draggingIndex state variable
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // State to track offset during dragging
   const canvasRef = useRef(null);
+
+  console.log("tesxt", text);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -65,6 +66,32 @@ export default function Home() {
       img.src = image;
     }
   }, [image, canvasRef.current]);
+
+  const addText = () => {
+    const newTextInput = {
+      text: "",
+      fontSize: 16,
+      color: "#000000",
+      position: { x: 50, y: 50 },
+    };
+    setText([...text, newTextInput]);
+  };
+
+  const updateText = (index, field, value) => {
+    const updatedTexts = [...text];
+    updatedTexts[index][field] = value;
+    setText(updatedTexts);
+  };
+
+  const removeText = (index) => {
+    const updatedTexts = [...text];
+    updatedTexts.splice(index, 1);
+    setText(updatedTexts);
+  };
+
+  useEffect(() => {
+    drawText();
+  }, [image, text]);
 
   const handleCheckboxChange = (event) => {
     const { checked, value } = event.target;
@@ -181,11 +208,12 @@ export default function Home() {
   };
 
   const handleMouseUp = () => {
-    setIsDragging(false);
+    setDraggingIndex(null);
   };
 
   const drawText = () => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
     // Redraw image
@@ -220,55 +248,59 @@ export default function Home() {
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
         // Draw text
-        ctx.font = `${fontSize}px Arial`;
-        ctx.fillStyle = textColor;
-        ctx.fillText(text, textPosition.x, textPosition.y);
+        text.length > 0 &&
+          text.forEach((textItem) => {
+            const { text, fontSize, color, position } = textItem;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = color;
+            ctx.fillText(text, position.x, position.y);
+          });
       };
       img.src = image;
     }
   };
 
-  const handleMouseDown = (event) => {
-    setIsDragging(true);
+  const handleMouseDown = (event, index) => {
+    setDraggingIndex(index);
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const offsetX = event.clientX - rect.left;
     const offsetY = event.clientY - rect.top;
-    setDragOffset({ x: offsetX - textPosition.x, y: offsetY - textPosition.y });
+    setDragOffset({
+      x: offsetX - text[index].position.x,
+      y: offsetY - text[index].position.y,
+    });
   };
 
   const handleMouseMove = (event) => {
-    if (isDragging) {
+    if (draggingIndex !== null) {
       const canvas = canvasRef.current;
       const rect = canvas.getBoundingClientRect();
       const offsetX = event.clientX - rect.left;
       const offsetY = event.clientY - rect.top;
-      setTextPosition({
+      updateText(draggingIndex, "position", {
         x: offsetX - dragOffset.x,
         y: offsetY - dragOffset.y,
       });
-      // Redraw text when dragging
-      drawText();
     }
   };
 
   return (
-    <div className="h-screen bg-[#f9f9f9]">
+    <div
+      className="h-screen bg-[#f9f9f9]"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    >
       <ToastContainer />
       <Navbar />
       {!image && <LandingPage setImage={setImage} />}
 
       {image && (
-        <div
-          className="w-full flex h-screen bg-[#f9f9f9]"
-          onMouseUp={handleMouseUp}
-        >
+        <div className="w-full flex h-screen bg-[#f9f9f9]">
           <section className="flex justify-center items-center w-[72%] mt-[4rem] relative">
             <canvas
               id="canvas"
               ref={canvasRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
               width="500"
               height="500"
             ></canvas>
@@ -367,25 +399,43 @@ export default function Home() {
             </div>
 
             <div>
-              <input
-                type="text"
-                value={text}
-                onChange={handleTextChange}
-                placeholder="Enter text"
-              />
-              <input
-                type="number"
-                value={fontSize}
-                onChange={handleFontSizeChange}
-                placeholder="Font size"
-              />
-              <input
-                type="color"
-                value={textColor}
-                onChange={handleTextColorChange}
-                placeholder="Text color"
-              />
-              <button onClick={drawText}>Add Text</button>
+              <button onClick={addText}>Add Text</button>
+              {text.length > 0 &&
+                text.map((textItem, index) => (
+                  <div key={index}>
+                    <input
+                      type="text"
+                      value={textItem.text}
+                      onChange={(e) =>
+                        updateText(index, "text", e.target.value)
+                      }
+                      placeholder="Enter text"
+                    />
+                    <input
+                      type="number"
+                      value={textItem.fontSize}
+                      onChange={(e) =>
+                        updateText(index, "fontSize", parseInt(e.target.value))
+                      }
+                      placeholder="Font size"
+                    />
+                    <input
+                      type="color"
+                      value={textItem.color}
+                      onChange={(e) =>
+                        updateText(index, "color", e.target.value)
+                      }
+                      placeholder="Text color"
+                    />
+                    <button onClick={() => removeText(index)}>Remove</button>
+                    <div
+                      onMouseDown={(event) => handleMouseDown(event, index)}
+                      style={{ cursor: "move" }}
+                    >
+                      Drag me
+                    </div>
+                  </div>
+                ))}
             </div>
 
             <div className="flex justify-center items-center w-full">
