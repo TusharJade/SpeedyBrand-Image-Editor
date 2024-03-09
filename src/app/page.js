@@ -2,69 +2,27 @@
 
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { AiFillPlusCircle } from "react-icons/ai";
-import { AiFillMinusCircle } from "react-icons/ai";
-import { GrPowerReset } from "react-icons/gr";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useRef, useState } from "react";
 import { MdDownload } from "react-icons/md";
-import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import LandingPage from "@/components/LandingPage";
 import { effects } from "@/lib/utils";
 
 export default function Home() {
   const [image, setImage] = useState(null);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [appliedEffects, setAppliedEffects] = useState([]);
-  const [text, setText] = useState(""); // State for text input
+  const [text, setText] = useState([]); // State for text input
   const [draggingIndex, setDraggingIndex] = useState(null); // Define draggingIndex state variable
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // State to track offset during dragging
   const canvasRef = useRef(null);
 
-  console.log("tesxt", text);
-
+  // when image or text is added
   useEffect(() => {
-    const canvas = canvasRef.current;
+    drawContent();
+  }, [image, text, appliedEffects]);
 
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
-
-      img.onload = () => {
-        const { naturalWidth, naturalHeight } = img;
-        const canvasAspectRatio = canvas.width / canvas.height;
-        const imageAspectRatio = naturalWidth / naturalHeight;
-        let drawWidth, drawHeight, offsetX, offsetY;
-
-        if (imageAspectRatio > canvasAspectRatio) {
-          drawWidth = canvas.width;
-          drawHeight = canvas.width / imageAspectRatio;
-          offsetX = 0;
-          offsetY = (canvas.height - drawHeight) / 2;
-        } else {
-          drawWidth = canvas.height * imageAspectRatio;
-          drawHeight = canvas.height;
-          offsetX = (canvas.width - drawWidth) / 2;
-          offsetY = 0;
-        }
-
-        // Set image smoothing quality
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw image on canvas
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-        setImageLoaded(true);
-      };
-
-      img.src = image;
-    }
-  }, [image, canvasRef.current]);
-
+  // when text is added
   const addText = () => {
     const newTextInput = {
       text: "",
@@ -75,22 +33,21 @@ export default function Home() {
     setText([...text, newTextInput]);
   };
 
+  // when text updated
   const updateText = (index, field, value) => {
     const updatedTexts = [...text];
     updatedTexts[index][field] = value;
     setText(updatedTexts);
   };
 
+  //when text removed
   const removeText = (index) => {
     const updatedTexts = [...text];
     updatedTexts.splice(index, 1);
     setText(updatedTexts);
   };
 
-  useEffect(() => {
-    drawText();
-  }, [image, text]);
-
+  //for checkboxes
   const handleCheckboxChange = (event) => {
     const { checked, value } = event.target;
     let updatedEffects = [...appliedEffects];
@@ -102,102 +59,8 @@ export default function Home() {
     setAppliedEffects(updatedEffects);
   };
 
-  const applyEffects = () => {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const img = new Image();
-    img.onload = () => {
-      const { naturalWidth, naturalHeight } = img;
-      const canvasAspectRatio = canvas.width / canvas.height;
-      const imageAspectRatio = naturalWidth / naturalHeight;
-      let drawWidth, drawHeight, offsetX, offsetY;
-
-      if (imageAspectRatio > canvasAspectRatio) {
-        drawWidth = canvas.width;
-        drawHeight = canvas.width / imageAspectRatio;
-        offsetX = 0;
-        offsetY = (canvas.height - drawHeight) / 2;
-      } else {
-        drawWidth = canvas.height * imageAspectRatio;
-        drawHeight = canvas.height;
-        offsetX = (canvas.width - drawWidth) / 2;
-        offsetY = 0;
-      }
-
-      // Set image smoothing quality
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw image on canvas
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-      appliedEffects.forEach((effect) => {
-        effects[effect](ctx, drawWidth, drawHeight, offsetX, offsetY);
-      });
-    };
-    img.src = image;
-  };
-
-  const resetEffects = () => {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Redraw original image without any effects
-    const img = new Image();
-    img.onload = () => {
-      const { naturalWidth, naturalHeight } = img;
-      const canvasAspectRatio = canvas.width / canvas.height;
-      const imageAspectRatio = naturalWidth / naturalHeight;
-      let drawWidth, drawHeight, offsetX, offsetY;
-
-      if (imageAspectRatio > canvasAspectRatio) {
-        drawWidth = canvas.width;
-        drawHeight = canvas.width / imageAspectRatio;
-        offsetX = 0;
-        offsetY = (canvas.height - drawHeight) / 2;
-      } else {
-        drawWidth = canvas.height * imageAspectRatio;
-        drawHeight = canvas.height;
-        offsetX = (canvas.width - drawWidth) / 2;
-        offsetY = 0;
-      }
-
-      // Set image smoothing quality
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw image on canvas
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    };
-    img.src = image;
-
-    // Clear applied effects array
-    setAppliedEffects([]);
-  };
-
-  const downloadImage = () => {
-    const canvas = document.getElementById("canvas");
-    const url = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.download = "modified_image.png";
-    link.href = url;
-    link.click();
-  };
-
-  const handleMouseUp = () => {
-    setDraggingIndex(null);
-  };
-
-  const drawText = () => {
+  // to draw content or add effects on canvas
+  const drawContent = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -233,6 +96,11 @@ export default function Home() {
         // Draw image on canvas
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
+        // Apply effects
+        appliedEffects.forEach((effect) => {
+          effects[effect](ctx, drawWidth, drawHeight, offsetX, offsetY);
+        });
+
         // Draw text
         text.length > 0 &&
           text.forEach((textItem) => {
@@ -246,16 +114,23 @@ export default function Home() {
     }
   };
 
-  const handleMouseDown = (event, index) => {
-    setDraggingIndex(index);
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const offsetX = event.clientX - rect.left;
-    const offsetY = event.clientY - rect.top;
-    setDragOffset({
-      x: offsetX - text[index].position.x,
-      y: offsetY - text[index].position.y,
-    });
+  // to reset effects
+  const resetEffects = () => {
+    setAppliedEffects([]);
+  };
+
+  // to downlode image
+  const downloadImage = () => {
+    const canvas = document.getElementById("canvas");
+    const url = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.download = "modified_image.png";
+    link.href = url;
+    link.click();
+  };
+
+  const handleMouseUp = () => {
+    setDraggingIndex(null);
   };
 
   const handleMouseMove = (event) => {
@@ -269,6 +144,18 @@ export default function Home() {
         y: offsetY - dragOffset.y,
       });
     }
+  };
+
+  const handleMouseDown = (event, index) => {
+    setDraggingIndex(index);
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const offsetY = event.clientY - rect.top;
+    setDragOffset({
+      x: offsetX - text[index].position.x,
+      y: offsetY - text[index].position.y,
+    });
   };
 
   return (
@@ -294,94 +181,79 @@ export default function Home() {
 
           <section className="w-[28%] mt-[4rem] bg-white shadow-md">
             <div>
-              {imageLoaded && (
-                <div>
-                  <label className="flex items-center mb-4">
-                    <input
-                      type="checkbox"
-                      value="grayscale"
-                      checked={appliedEffects.includes("grayscale")}
-                      onChange={handleCheckboxChange}
-                      className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                    />
-                    <span className="text-gray-800 mt-[2.5px]">Grayscale</span>
-                  </label>
-                  <label className="flex items-center mb-4">
-                    <input
-                      type="checkbox"
-                      value="invert"
-                      checked={appliedEffects.includes("invert") ? true : false}
-                      onChange={handleCheckboxChange}
-                      className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                    />
-                    <span className="text-gray-800 mt-[2.5px]">Invert</span>
-                    Colors
-                  </label>
-                  <label className="flex items-center mb-4">
-                    <input
-                      type="checkbox"
-                      value="sepia"
-                      checked={appliedEffects.includes("sepia") ? true : false}
-                      onChange={handleCheckboxChange}
-                      className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                    />
-                    <span className="text-gray-800 mt-[2.5px]"> Sepia</span>
-                  </label>
-                  <label className="flex items-center mb-4">
-                    <input
-                      type="checkbox"
-                      value="brightness"
-                      checked={
-                        appliedEffects.includes("brightness") ? true : false
-                      }
-                      onChange={handleCheckboxChange}
-                      className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                    />
-                    <span className="text-gray-800 mt-[2.5px]">
-                      {" "}
-                      Brightness
-                    </span>
-                  </label>
-                  <label className="flex items-center mb-4">
-                    <input
-                      type="checkbox"
-                      value="contrast"
-                      checked={
-                        appliedEffects.includes("contrast") ? true : false
-                      }
-                      onChange={handleCheckboxChange}
-                      className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                    />
-                    <span className="text-gray-800 mt-[2.5px]">Contrast</span>
-                  </label>
-                  <label className="flex items-center mb-4">
-                    <input
-                      type="checkbox"
-                      value="vintage"
-                      checked={
-                        appliedEffects.includes("vintage") ? true : false
-                      }
-                      onChange={handleCheckboxChange}
-                      className="h-5 w-5 text-blue-600 rounded mr-[5px]"
-                    />
-                    <span className="text-gray-800 mt-[2.5px]">Vintage</span>
-                  </label>
-                  <div className="mx-4 flex justify-between mb-4">
-                    <button
-                      onClick={applyEffects}
-                      className="text-[#fe5829] border-[1px] border-[#fe5829] px-3 py-1 rounded-md"
-                    >
-                      Apply Effects
-                    </button>
-                    <button
-                      onClick={resetEffects}
-                      className="text-[#fe5829] border-[1px] border-[#fe5829] px-3 py-1 rounded-md"
-                    >
-                      Reset
-                    </button>
-                  </div>
+              <div>
+                <label className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    value="grayscale"
+                    checked={appliedEffects.includes("grayscale")}
+                    onChange={handleCheckboxChange}
+                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
+                  />
+                  <span className="text-gray-800 mt-[2.5px]">Grayscale</span>
+                </label>
+                <label className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    value="invert"
+                    checked={appliedEffects.includes("invert") ? true : false}
+                    onChange={handleCheckboxChange}
+                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
+                  />
+                  <span className="text-gray-800 mt-[2.5px]">Invert</span>
+                  Colors
+                </label>
+                <label className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    value="sepia"
+                    checked={appliedEffects.includes("sepia") ? true : false}
+                    onChange={handleCheckboxChange}
+                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
+                  />
+                  <span className="text-gray-800 mt-[2.5px]"> Sepia</span>
+                </label>
+                <label className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    value="brightness"
+                    checked={
+                      appliedEffects.includes("brightness") ? true : false
+                    }
+                    onChange={handleCheckboxChange}
+                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
+                  />
+                  <span className="text-gray-800 mt-[2.5px]"> Brightness</span>
+                </label>
+                <label className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    value="contrast"
+                    checked={appliedEffects.includes("contrast") ? true : false}
+                    onChange={handleCheckboxChange}
+                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
+                  />
+                  <span className="text-gray-800 mt-[2.5px]">Contrast</span>
+                </label>
+                <label className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    value="vintage"
+                    checked={appliedEffects.includes("vintage") ? true : false}
+                    onChange={handleCheckboxChange}
+                    className="h-5 w-5 text-blue-600 rounded mr-[5px]"
+                  />
+                  <span className="text-gray-800 mt-[2.5px]">Vintage</span>
+                </label>
+                <div className="mx-4 flex justify-between mb-4">
+                  <button
+                    onClick={resetEffects}
+                    className="text-[#fe5829] border-[1px] border-[#fe5829] px-3 py-1 rounded-md"
+                  >
+                    Reset
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
 
             <div>
