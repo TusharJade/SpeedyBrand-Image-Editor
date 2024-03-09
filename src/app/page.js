@@ -17,6 +17,12 @@ export default function Home() {
   const [image, setImage] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [appliedEffects, setAppliedEffects] = useState([]);
+  const [text, setText] = useState([]); // State for text input
+  const [fontSize, setFontSize] = useState(16); // State for font size
+  const [textColor, setTextColor] = useState("#000000"); // State for text color
+  const [textPosition, setTextPosition] = useState({ x: 50, y: 50 }); // State for text position
+  const [isDragging, setIsDragging] = useState(false); // State to track dragging state
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // State to track offset during dragging
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -162,6 +168,90 @@ export default function Home() {
     link.click();
   };
 
+  const handleTextChange = (event) => {
+    setText(event.target.value);
+  };
+
+  const handleFontSizeChange = (event) => {
+    setFontSize(parseInt(event.target.value));
+  };
+
+  const handleTextColorChange = (event) => {
+    setTextColor(event.target.value);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const drawText = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Redraw image
+    if (image) {
+      const img = new Image();
+      img.onload = () => {
+        const { naturalWidth, naturalHeight } = img;
+        const canvasAspectRatio = canvas.width / canvas.height;
+        const imageAspectRatio = naturalWidth / naturalHeight;
+        let drawWidth, drawHeight, offsetX, offsetY;
+
+        if (imageAspectRatio > canvasAspectRatio) {
+          drawWidth = canvas.width;
+          drawHeight = canvas.width / imageAspectRatio;
+          offsetX = 0;
+          offsetY = (canvas.height - drawHeight) / 2;
+        } else {
+          drawWidth = canvas.height * imageAspectRatio;
+          drawHeight = canvas.height;
+          offsetX = (canvas.width - drawWidth) / 2;
+          offsetY = 0;
+        }
+
+        // Set image smoothing quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
+        // Draw image on canvas
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+
+        // Draw text
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillStyle = textColor;
+        ctx.fillText(text, textPosition.x, textPosition.y);
+      };
+      img.src = image;
+    }
+  };
+
+  const handleMouseDown = (event) => {
+    setIsDragging(true);
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const offsetY = event.clientY - rect.top;
+    setDragOffset({ x: offsetX - textPosition.x, y: offsetY - textPosition.y });
+  };
+
+  const handleMouseMove = (event) => {
+    if (isDragging) {
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const offsetX = event.clientX - rect.left;
+      const offsetY = event.clientY - rect.top;
+      setTextPosition({
+        x: offsetX - dragOffset.x,
+        y: offsetY - dragOffset.y,
+      });
+      // Redraw text when dragging
+      drawText();
+    }
+  };
+
   return (
     <div className="h-screen bg-[#f9f9f9]">
       <ToastContainer />
@@ -169,46 +259,19 @@ export default function Home() {
       {!image && <LandingPage setImage={setImage} />}
 
       {image && (
-        <div className="w-full flex h-screen bg-[#f9f9f9]">
+        <div
+          className="w-full flex h-screen bg-[#f9f9f9]"
+          onMouseUp={handleMouseUp}
+        >
           <section className="flex justify-center items-center w-[72%] mt-[4rem] relative">
-            <TransformWrapper initialScale={1}>
-              {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
-                <>
-                  <div className="tools">
-                    <button
-                      onClick={() => zoomIn()}
-                      className="top-1 left-2 absolute text-[1.4rem] text-gray-400"
-                    >
-                      <AiFillPlusCircle />
-                    </button>
-                    <button
-                      onClick={() => zoomOut()}
-                      className="top-1 left-9 absolute text-[1.4rem] text-gray-400"
-                    >
-                      <AiFillMinusCircle />
-                    </button>
-                    <button
-                      onClick={() => resetTransform()}
-                      className="top-1 right-1 absolute text-[1.3rem] text-gray-400"
-                    >
-                      <GrPowerReset />
-                    </button>
-                  </div>
-                  <TransformComponent>
-                    <TransformWrapper initialScale={1}>
-                      <TransformComponent>
-                        <canvas
-                          id="canvas"
-                          ref={canvasRef}
-                          width="500"
-                          height="500"
-                        ></canvas>
-                      </TransformComponent>
-                    </TransformWrapper>
-                  </TransformComponent>
-                </>
-              )}
-            </TransformWrapper>
+            <canvas
+              id="canvas"
+              ref={canvasRef}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              width="500"
+              height="500"
+            ></canvas>
           </section>
 
           <section className="w-[28%] mt-[4rem] bg-white shadow-md">
@@ -302,6 +365,29 @@ export default function Home() {
                 </div>
               )}
             </div>
+
+            <div>
+              <input
+                type="text"
+                value={text}
+                onChange={handleTextChange}
+                placeholder="Enter text"
+              />
+              <input
+                type="number"
+                value={fontSize}
+                onChange={handleFontSizeChange}
+                placeholder="Font size"
+              />
+              <input
+                type="color"
+                value={textColor}
+                onChange={handleTextColorChange}
+                placeholder="Text color"
+              />
+              <button onClick={drawText}>Add Text</button>
+            </div>
+
             <div className="flex justify-center items-center w-full">
               <Button variant="destructive" size="sm" onClick={downloadImage}>
                 <MdDownload className="mt-[1px] mr-1" />
