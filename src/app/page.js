@@ -18,8 +18,6 @@ export default function Home() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [appliedEffects, setAppliedEffects] = useState([]);
   const [text, setText] = useState(""); // State for text input
-  const [fontSize, setFontSize] = useState(16); // State for font size
-  const [textColor, setTextColor] = useState("#000000"); // State for text color
   const [draggingIndex, setDraggingIndex] = useState(null); // Define draggingIndex state variable
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // State to track offset during dragging
   const canvasRef = useRef(null);
@@ -193,18 +191,6 @@ export default function Home() {
     link.download = "modified_image.png";
     link.href = url;
     link.click();
-  };
-
-  const handleTextChange = (event) => {
-    setText(event.target.value);
-  };
-
-  const handleFontSizeChange = (event) => {
-    setFontSize(parseInt(event.target.value));
-  };
-
-  const handleTextColorChange = (event) => {
-    setTextColor(event.target.value);
   };
 
   const handleMouseUp = () => {
