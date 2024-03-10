@@ -11,7 +11,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-const page = () => {
+const SignUp = () => {
   const [user, setUser] = useState({ email: "", password: "" });
   const { setSignUpData } = useAuthContext();
   const router = useRouter();
@@ -84,4 +84,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default SignUp;

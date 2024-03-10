@@ -8,11 +8,8 @@ import LandingPage from "@/components/LandingPage";
 import { effects } from "@/lib/utils";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
-import { useAuthContext } from "@/store/AuthContext";
-import { toast } from "react-toastify";
 
 export default function Home() {
-  const { auth } = useAuthContext();
   const [image, setImage] = useState(null);
   const [appliedEffects, setAppliedEffects] = useState([]);
   const [text, setText] = useState([]); // State for text input
