@@ -163,197 +163,214 @@ export default function Home() {
     <div
       className="h-screen bg-[#f9f9f9]"
       onMouseMove={handleMouseMove}
+      onTouchMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onTouchEnd={handleMouseUp}
     >
       <Navbar />
       {!image && <LandingPage setImage={setImage} />}
 
       {image && (
-        <div className="w-full flex h-screen bg-[#f9f9f9]">
-          {/* // image section */}
-          <section className="flex justify-center items-center w-[72%] mt-[4rem] relative">
-            <canvas
-              id="canvas"
-              ref={canvasRef}
-              width="500"
-              height="500"
-            ></canvas>
-          </section>
+        <>
+          <div className="w-full flex flex-col-reverse md:flex-row md:flex md:h-screen bg-[#f9f9f9] relative">
+            {/* // image section */}
+            <section className="flex justify-center items-center w-full md:w-[65%] lg:w-[72%] mt-[4rem] relative">
+              <canvas
+                id="canvas"
+                ref={canvasRef}
+                width="500"
+                height="500"
+                className="w-[320px] h-[320px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px]"
+              ></canvas>
+            </section>
 
-          {/* effects and text section */}
-          <section className="w-[28%] mt-[4rem] bg-white shadow-md overflow-auto flex justify-between flex-col">
-            <div>
-              <div
-                className="w-full flex items-center justify-center font-sans font-medium cursor-pointer text-[1.1rem] bg-white text-[#454545] py-5"
-                onClick={() =>
-                  setDropDown((prev) => ({ ...prev, effects: !prev.effects }))
-                }
-              >
-                <span className="mr-2 text-[1.25rem] mt-[1px]">
-                  <IoMdArrowDropdown />
-                </span>
-                Effets for Image
-              </div>
+            {/* effects and text section */}
+            <section className="w-full h-auto md:w-[35%] lg:w-[28%] mt-[4rem] bg-white shadow-md overflow-auto md:flex justify-between flex-col">
+              <div>
+                <div
+                  className="w-full flex items-center justify-center font-sans font-medium cursor-pointer text-[1.1rem] bg-white text-[#454545] py-5"
+                  onClick={() =>
+                    setDropDown((prev) => ({ ...prev, effects: !prev.effects }))
+                  }
+                >
+                  <span className="mr-2 text-[1.25rem] mt-[1px]">
+                    <IoMdArrowDropdown />
+                  </span>
+                  Effets for Image
+                </div>
 
-              <div className="bg-slate-300 h-[1px]"></div>
+                <div className="bg-slate-300 h-[1px]"></div>
 
-              {dropDown.effects && (
-                <>
-                  <div className="ml-4 mt-3">
-                    {[
-                      "Grayscale",
-                      "Invert",
-                      "Sepia",
-                      "Brightness",
-                      "Contrast",
-                      "Vintage",
-                    ].map((effectName) => {
-                      return (
-                        <label className="flex items-center mb-3">
-                          <input
-                            type="checkbox"
-                            value={effectName.toLowerCase()}
-                            checked={
-                              appliedEffects.includes(effectName.toLowerCase())
-                                ? true
-                                : false
-                            }
-                            onChange={handleCheckboxChange}
-                            className="h-5 w-5 text-blue-600 rounded mr-[5px] cursor-pointer"
-                          />
-                          <span className="text-gray-800 mt-[2.5px] cursor-pointer">
-                            {effectName}
-                          </span>
-                        </label>
-                      );
-                    })}
-                    <div className="flex justify-center mb-4 w-full">
+                {dropDown.effects && (
+                  <>
+                    <div className="ml-4 mt-3">
+                      {[
+                        "Grayscale",
+                        "Invert",
+                        "Sepia",
+                        "Brightness",
+                        "Contrast",
+                        "Vintage",
+                      ].map((effectName) => {
+                        return (
+                          <label className="flex items-center mb-3">
+                            <input
+                              type="checkbox"
+                              value={effectName.toLowerCase()}
+                              checked={
+                                appliedEffects.includes(
+                                  effectName.toLowerCase()
+                                )
+                                  ? true
+                                  : false
+                              }
+                              onChange={handleCheckboxChange}
+                              className="h-5 w-5 text-blue-600 rounded mr-[5px] cursor-pointer"
+                            />
+                            <span className="text-gray-800 mt-[2.5px] cursor-pointer">
+                              {effectName}
+                            </span>
+                          </label>
+                        );
+                      })}
+                      <div className="flex justify-center mb-4 w-full">
+                        <button
+                          onClick={resetEffects}
+                          className="text-[#fe5829] border-[1px] border-[#fe5829] px-3 py-1 rounded-md"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    </div>
+                    <div className="bg-slate-300 h-[1px]"></div>
+                  </>
+                )}
+
+                {/* Add text */}
+                <div
+                  className="w-full flex items-center justify-center font-sans font-medium text-[1.1rem] bg-white text-[#454545] py-5 cursor-pointer"
+                  onClick={() =>
+                    setDropDown((prev) => ({ ...prev, text: !prev.text }))
+                  }
+                >
+                  <span className="mr-2 text-[1.25rem] mt-[1px]">
+                    <IoMdArrowDropdown />
+                  </span>
+                  Add Text
+                </div>
+
+                <div className="bg-slate-300 h-[1px]"></div>
+
+                {dropDown.text && (
+                  <div className="max-h-[10rem] overflow-auto md:max-h-max">
+                    {text.length > 0 &&
+                      text.map((textItem, index) => (
+                        <div key={index}>
+                          <label
+                            htmlFor="text"
+                            className="flex items-center mx-4 mt-4"
+                          >
+                            <span className="mr-2 text-[#616161]">Text:</span>
+                            <input
+                              type="text"
+                              id="text"
+                              value={textItem.text}
+                              onChange={(e) =>
+                                updateText(index, "text", e.target.value)
+                              }
+                              placeholder="Enter text"
+                              className="px-2 py-2 w-full border outline-none ml-[31px] border-slate-300 rounded-lg placeholder:text-slate-400"
+                            />
+                          </label>
+                          <label
+                            htmlFor="number"
+                            className="flex items-center mx-4 mt-4"
+                          >
+                            <span className="mr-2 text-[#616161]">
+                              Fontsize:
+                            </span>
+                            <input
+                              type="number"
+                              value={textItem.fontSize}
+                              onChange={(e) =>
+                                updateText(
+                                  index,
+                                  "fontSize",
+                                  parseInt(e.target.value)
+                                )
+                              }
+                              placeholder="Font size"
+                              className="px-2 py-2 border w-full outline-none border-slate-300 rounded-lg placeholder:text-slate-400"
+                            />
+                          </label>
+                          <label
+                            htmlFor="color"
+                            className="flex items-center mx-4 mt-4"
+                          >
+                            <span className="text-[#616161] mr-8">Color:</span>
+                            <input
+                              type="color"
+                              id="color"
+                              value={textItem.color}
+                              onChange={(e) =>
+                                updateText(index, "color", e.target.value)
+                              }
+                              placeholder="Text color"
+                            />
+                          </label>
+                          <div className="flex items-center justify-around mx-4">
+                            <button
+                              onClick={() => removeText(index)}
+                              className="border border-[#fe5829] text-[#fe5829] flex items-center justify-center py-1.5 px-2.5 gap-1 rounded text-[14px] font-sans"
+                            >
+                              <MdDelete className="mb-[1px]" />
+                              <span> Delete</span>
+                            </button>
+                            <div
+                              onMouseDown={(event) =>
+                                handleMouseDown(event, index)
+                              }
+                              onTouchStart={(event) =>
+                                handleMouseDown(event, index)
+                              }
+                              className="cursor-move bg-gray-700 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-800 flex items-center justify-center"
+                              style={{ width: "80px", height: "80px" }}
+                            >
+                              <div className="w-2.5 h-5 bg-white rounded-full mr-2"></div>
+                              <div className="text-sm">Drag me</div>
+                            </div>
+                          </div>
+                          <div className="bg-slate-300 h-[1px] mx-4 mt-3"></div>
+                        </div>
+                      ))}
+
+                    <div className="flex items-center justify-center">
                       <button
-                        onClick={resetEffects}
-                        className="text-[#fe5829] border-[1px] border-[#fe5829] px-3 py-1 rounded-md"
+                        onClick={addText}
+                        className="border-[1px] py-2 px-4 rounded-md my-4 text-[#fe5829] border-[#fe5829] font-medium"
                       >
-                        Reset
+                        Click to add new text
                       </button>
                     </div>
                   </div>
-                  <div className="bg-slate-300 h-[1px]"></div>
-                </>
-              )}
-
-              {/* Add text */}
-              <div
-                className="w-full flex items-center justify-center font-sans font-medium text-[1.1rem] bg-white text-[#454545] py-5 cursor-pointer"
-                onClick={() =>
-                  setDropDown((prev) => ({ ...prev, text: !prev.text }))
-                }
-              >
-                <span className="mr-2 text-[1.25rem] mt-[1px]">
-                  <IoMdArrowDropdown />
-                </span>
-                Add Text
+                )}
               </div>
 
-              <div className="bg-slate-300 h-[1px]"></div>
-
-              {dropDown.text && (
-                <div>
-                  {text.length > 0 &&
-                    text.map((textItem, index) => (
-                      <div key={index}>
-                        <label
-                          htmlFor="text"
-                          className="flex items-center mx-4 mt-4"
-                        >
-                          <span className="mr-2 text-[#616161]">Text:</span>
-                          <input
-                            type="text"
-                            id="text"
-                            value={textItem.text}
-                            onChange={(e) =>
-                              updateText(index, "text", e.target.value)
-                            }
-                            placeholder="Enter text"
-                            className="px-2 py-2 w-full border outline-none ml-[31px] border-slate-300 rounded-lg placeholder:text-slate-400"
-                          />
-                        </label>
-                        <label
-                          htmlFor="number"
-                          className="flex items-center mx-4 mt-4"
-                        >
-                          <span className="mr-2 text-[#616161]">Fontsize:</span>
-                          <input
-                            type="number"
-                            value={textItem.fontSize}
-                            onChange={(e) =>
-                              updateText(
-                                index,
-                                "fontSize",
-                                parseInt(e.target.value)
-                              )
-                            }
-                            placeholder="Font size"
-                            className="px-2 py-2 border w-full outline-none border-slate-300 rounded-lg placeholder:text-slate-400"
-                          />
-                        </label>
-                        <label
-                          htmlFor="color"
-                          className="flex items-center mx-4 mt-4"
-                        >
-                          <span className="text-[#616161] mr-8">Color:</span>
-                          <input
-                            type="color"
-                            id="color"
-                            value={textItem.color}
-                            onChange={(e) =>
-                              updateText(index, "color", e.target.value)
-                            }
-                            placeholder="Text color"
-                          />
-                        </label>
-                        <div className="flex items-center justify-around mx-4">
-                          <button
-                            onClick={() => removeText(index)}
-                            className="border border-[#fe5829] text-[#fe5829] flex items-center justify-center py-1.5 px-2.5 gap-1 rounded text-[14px] font-sans"
-                          >
-                            <MdDelete className="mb-[1px]" />
-                            <span> Delete</span>
-                          </button>
-                          <div
-                            onMouseDown={(event) =>
-                              handleMouseDown(event, index)
-                            }
-                            className="cursor-move bg-gray-700 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-800 flex items-center justify-center"
-                            style={{ width: "80px", height: "80px" }}
-                          >
-                            <div className="w-2.5 h-5 bg-white rounded-full mr-2"></div>
-                            <div className="text-sm">Drag me</div>
-                          </div>
-                        </div>
-                        <div className="bg-slate-300 h-[1px] mx-4 mt-3"></div>
-                      </div>
-                    ))}
-
-                  <div className="flex items-center justify-center">
-                    <button
-                      onClick={addText}
-                      className="border-[1px] py-2 px-4 rounded-md mt-4 text-[#fe5829] border-[#fe5829] font-medium"
-                    >
-                      Click to add new text
-                    </button>
-                  </div>
-                </div>
-              )}
+              {/* Download edited image */}
+              <div className="hidden justify-center items-center w-full mb-3 mt-4 md:flex">
+                <Button variant="destructive" size="sm" onClick={downloadImage}>
+                  <MdDownload className="mt-[1px] mr-1" />
+                  Download
+                </Button>
+              </div>
+            </section>
+          </div>
+          <div className="md:hidden flex text-white w-full justify-center items-center absolute bottom-0 mb-5 text-[2rem]">
+            <div className="bg-[#fe5829] w-12 h-12 rounded-full flex justify-center items-center">
+              <MdDownload />
             </div>
-
-            {/* Download edited image */}
-            <div className="flex justify-center items-center w-full mb-3 mt-4">
-              <Button variant="destructive" size="sm" onClick={downloadImage}>
-                <MdDownload className="mt-[1px] mr-1" />
-                Download
-              </Button>
-            </div>
-          </section>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

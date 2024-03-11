@@ -29,7 +29,7 @@ const SignUp = () => {
   return (
     <div className="w-full h-screen flex">
       <AuthLeftSection />
-      <section className="w-[50%] h-screen">
+      <section className="w-full md:w-[50%] md:mx-0 mx-4 h-screen">
         <form
           onSubmit={handleSubmit}
           className="flex flex-col items-center justify-center h-full font-sans"

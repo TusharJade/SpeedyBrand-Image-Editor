@@ -38,7 +38,7 @@ const Login = () => {
   return (
     <div className="w-full h-screen flex">
       <AuthLeftSection />
-      <section className="w-[50%] h-screen">
+      <section className="w-full md:w-[50%] h-screen md:mx-0 mx-4">
         <form
           onSubmit={handleSubmit}
           className="flex flex-col items-center justify-center h-full font-sans"
@@ -89,7 +89,7 @@ const Login = () => {
 
           <div className="mt-4 text-[1.1rem]">
             Don't have an account?
-            <Link className="text-[#fe5829]" href="/singup">
+            <Link className="text-[#fe5829]" href="/signup">
               {" "}
               Signup.
             </Link>

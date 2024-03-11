@@ -36,7 +36,7 @@ const Navbar = () => {
             </Link>
             <Link
               className="font-medium text-white bg-[#fe5829] py-[0.3125rem] px-3 rounded-md text-[14.5px]"
-              href="/singup"
+              href="/signup"
             >
               Sign up
             </Link>
