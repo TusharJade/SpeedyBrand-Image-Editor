@@ -163,9 +163,7 @@ export default function Home() {
     <div
       className="h-screen bg-[#f9f9f9]"
       onMouseMove={handleMouseMove}
-      onTouchMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onTouchEnd={handleMouseUp}
     >
       <Navbar />
       {!image && <LandingPage setImage={setImage} />}
@@ -330,9 +328,6 @@ export default function Home() {
                               onMouseDown={(event) =>
                                 handleMouseDown(event, index)
                               }
-                              onTouchStart={(event) =>
-                                handleMouseDown(event, index)
-                              }
                               className="cursor-move bg-gray-700 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-800 flex items-center justify-center"
                               style={{ width: "80px", height: "80px" }}
                             >
@@ -366,7 +361,10 @@ export default function Home() {
             </section>
           </div>
           <div className="md:hidden flex text-white w-full justify-center items-center absolute bottom-0 mb-5 text-[2rem]">
-            <div className="bg-[#fe5829] w-12 h-12 rounded-full flex justify-center items-center">
+            <div
+              className="bg-[#fe5829] w-12 h-12 rounded-full flex justify-center items-center"
+              onClick={downloadImage}
+            >
               <MdDownload />
             </div>
           </div>
