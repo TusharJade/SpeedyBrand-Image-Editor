@@ -159,11 +159,38 @@ export default function Home() {
     });
   };
 
+  const handleMove = (event) => {
+    if (draggingIndex !== null) {
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const offsetX = event.clientX || event.touches[0].clientX - rect.left;
+      const offsetY = event.clientY || event.touches[0].clientY - rect.top;
+      updateText(draggingIndex, "position", {
+        x: offsetX - dragOffset.x,
+        y: offsetY - dragOffset.y,
+      });
+    }
+  };
+
+  const handleStart = (event, index) => {
+    setDraggingIndex(index);
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const offsetX = event.clientX || event.touches[0].clientX - rect.left;
+    const offsetY = event.clientY || event.touches[0].clientY - rect.top;
+    setDragOffset({
+      x: offsetX - text[index].position.x,
+      y: offsetY - text[index].position.y,
+    });
+  };
+
   return (
     <div
       className="h-screen bg-[#f9f9f9]"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onTouchMove={handleMove}
+      onTouchEnd={() => setDraggingIndex(null)}
     >
       <Navbar />
       {!image && <LandingPage setImage={setImage} />}
@@ -327,6 +354,9 @@ export default function Home() {
                             <div
                               onMouseDown={(event) =>
                                 handleMouseDown(event, index)
+                              }
+                              onTouchStart={(event) =>
+                                handleStart(event, index)
                               }
                               className="cursor-move bg-gray-700 text-white px-4 py-2 rounded-full shadow-md hover:bg-gray-800 flex items-center justify-center"
                               style={{ width: "80px", height: "80px" }}
